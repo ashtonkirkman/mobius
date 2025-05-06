@@ -4,12 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ca56148c-7a8e-4593-9bf4-7f53c3b3c547" name="Changes" comment="Chess Project Created">
-      <change afterPath="$PROJECT_DIR$/ChessServer/Chess.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ChessServer/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+    <list default="true" id="ca56148c-7a8e-4593-9bf4-7f53c3b3c547" name="Changes" comment="Pieces are correctly drawn on the board.">
+      <change afterPath="$PROJECT_DIR$/ChessRandom/RandomGuy.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Chess.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Chess.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessHuman/Human.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessHuman/Human.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/Chess.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessServer/Chess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessServer/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/bk-bishop.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/bk-bishop.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/bk-king.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/bk-king.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/bk-knight.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/bk-knight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/bk-pawn.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/bk-pawn.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/bk-queen.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/bk-queen.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/bk-rook.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/bk-rook.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/wt-bishop.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/wt-bishop.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/wt-king.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/wt-king.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/wt-knight.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/wt-knight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/wt-pawn.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/wt-pawn.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/wt-queen.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/wt-queen.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/wt-rook.png" beforeDir="false" afterPath="$PROJECT_DIR$/resources/wt-rook.png" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,12 +51,13 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.Chess.executor": "Run",
+    "Application.Human.executor": "Debug",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
     "jdk.selected.JAVA_MODULE": "openjdk-21",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/kirkm/BYU Winter 2025/Intro to AI/projects/Chess",
+    "last_opened_file_path": "C:/Users/kirkm/BYU Winter 2024/CS_240/chess",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -55,11 +69,24 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\kirkm\BYU Winter 2025\Intro to AI\projects\Chess\resources" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Human">
     <configuration name="Chess" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Chess" />
       <module name="Chess" />
       <option name="PROGRAM_PARAMETERS" value="10" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Human" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Human" />
+      <module name="Chess" />
+      <option name="PROGRAM_PARAMETERS" value="localhost 2" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -86,7 +113,7 @@
       <option name="presentableId" value="Default" />
       <updated>1746020939834</updated>
       <workItem from="1746020940868" duration="265000" />
-      <workItem from="1746021236285" duration="5785000" />
+      <workItem from="1746021236285" duration="33579000" />
     </task>
     <task id="LOCAL-00001" summary="Chess Project Created">
       <option name="closed" value="true" />
@@ -96,7 +123,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746021041001</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Pieces are correctly drawn on the board.">
+      <option name="closed" value="true" />
+      <created>1746031230840</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1746031230840</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -115,6 +150,18 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Chess Project Created" />
-    <option name="LAST_COMMIT_MESSAGE" value="Chess Project Created" />
+    <MESSAGE value="Pieces are correctly drawn on the board." />
+    <option name="LAST_COMMIT_MESSAGE" value="Pieces are correctly drawn on the board." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessHuman/Human.java</url>
+          <line>520</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

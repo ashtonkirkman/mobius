@@ -1,13 +1,13 @@
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.lang.*;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 
 class MyCanvas extends JComponent {
@@ -22,6 +22,38 @@ class MyCanvas extends JComponent {
     boolean gameOver = false;
     int winner;
 
+    static final Map<Integer, Character> pieceMap = new HashMap<>();
+
+    static {
+        pieceMap.put(0, '-');
+        pieceMap.put(1, 'R');
+        pieceMap.put(2, 'H');
+        pieceMap.put(3, 'B');
+        pieceMap.put(4, 'Q');
+        pieceMap.put(5, 'K');
+        pieceMap.put(6, 'P');
+
+        pieceMap.put(-1, 'r');
+        pieceMap.put(-2, 'h');
+        pieceMap.put(-3, 'b');
+        pieceMap.put(-4, 'q');
+        pieceMap.put(-5, 'k');
+        pieceMap.put(-6, 'p');
+    }
+
+    BufferedImage whiteKing;
+    BufferedImage blackKing;
+    BufferedImage whitePawn;
+    BufferedImage blackPawn;
+    BufferedImage whiteQueen;
+    BufferedImage blackQueen;
+    BufferedImage whiteRook;
+    BufferedImage blackRook;
+    BufferedImage whiteBishop;
+    BufferedImage blackBishop;
+    BufferedImage whiteKnight;
+    BufferedImage blackKnight;
+
     public MyCanvas(int w, int h) {
         //System.out.println("MyCanvas");
         width = w;
@@ -29,6 +61,23 @@ class MyCanvas extends JComponent {
 
         sqrWdth = (w - 60) / 8;
         sqrHght = (h - 168) / 8;
+
+        try {
+            whiteKing = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\wt-king.png"));
+            blackKing = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\bk-king.png"));
+            whitePawn = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\wt-pawn.png"));
+            blackPawn = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\bk-pawn.png"));
+            whiteQueen = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\wt-queen.png"));
+            blackQueen = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\bk-queen.png"));
+            whiteRook = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\wt-rook.png"));
+            blackRook = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\bk-rook.png"));
+            whiteBishop = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\wt-bishop.png"));
+            blackBishop = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\bk-bishop.png"));
+            whiteKnight = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\wt-knight.png"));
+            blackKnight = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\bk-knight.png"));
+        } catch (IOException e) {
+            System.err.println("Failed to load pawn image: " + e.getMessage());
+        }
     }
 
     public void gameOver() {
@@ -37,6 +86,17 @@ class MyCanvas extends JComponent {
         repaint();
     }
 
+    public void printState() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+//                System.out.print(pieceMap.get(state[i][j]));
+                System.out.print(state[i][j]);
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+    }
 
     public void updateState(int nState[][], int nTurn, double nt1, double nt2, int nwinner) {
         int i, j;
@@ -51,8 +111,6 @@ class MyCanvas extends JComponent {
         t1 = nt1;
         t2 = nt2;
         winner = nwinner;
-
-        //System.out.println("should repaint");
 
         repaint();
     }
@@ -98,56 +156,61 @@ class MyCanvas extends JComponent {
     void drawPieces(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
 
-        // Synchronously load the image once
-        try {
-            BufferedImage whiteKing = ImageIO.read(new File("ChessServer\\wt-king.png"));
-            BufferedImage blackKing = ImageIO.read(new File("ChessServer\\bk-king.png"));
-            BufferedImage whitePawn = ImageIO.read(new File("ChessServer\\wt-pawn.png"));
-            BufferedImage blackPawn = ImageIO.read(new File("ChessServer\\bk-pawn.png"));
-            BufferedImage whiteQueen = ImageIO.read(new File("ChessServer\\wt-queen.png"));
-            BufferedImage blackQueen = ImageIO.read(new File("ChessServer\\bk-queen.png"));
-            BufferedImage whiteRook = ImageIO.read(new File("ChessServer\\wt-rook.png"));
-            BufferedImage blackRook = ImageIO.read(new File("ChessServer\\bk-rook.png"));
-            BufferedImage whiteBishop = ImageIO.read(new File("ChessServer\\wt-bishop.png"));
-            BufferedImage blackBishop = ImageIO.read(new File("ChessServer\\bk-bishop.png"));
-            BufferedImage whiteKnight = ImageIO.read(new File("ChessServer\\wt-knight.png"));
-            BufferedImage blackKnight = ImageIO.read(new File("ChessServer\\bk-knight.png"));
+        int i, j;
+        int x, y;
 
-            // white pawns
-            for (int col = 0; col < 8; col++) {
-                int x = 30 + col * sqrWdth; // offset to align with board
-                int y = 34 + (7 - 1) * sqrHght; // row 1 for white pawns (flipped board indexing)
-                g2.drawImage(whitePawn, x, y, sqrWdth, sqrHght, null);
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                if (state[i][j] == -6) {  // black
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(blackPawn, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == 6) { // white
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(whitePawn, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == -5) {
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(blackKing, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == 5) {
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(whiteKing, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == -4) {
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(blackQueen, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == 4) {
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(whiteQueen, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == -3) {
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(blackBishop, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == 3) {
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(whiteBishop, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == -2) {
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(blackKnight, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == 2) {
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(whiteKnight, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == -1) {
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(blackRook, x, y, sqrWdth, sqrHght, null);
+                } else if (state[i][j] == 1) {
+                    x = 30 + sqrWdth * j;
+                    y = 34 + sqrHght * (7 - i);
+                    g2.drawImage(whiteRook, x, y, sqrWdth, sqrHght, null);
+                }
             }
-            // black pawns
-            for (int col = 0; col < 8; col++) {
-                int x = 30 + col * sqrWdth; // offset to align with board
-                int y = 34 + sqrHght; // row 7 for black pawns (flipped board indexing)
-                g2.drawImage(blackPawn, x, y, sqrWdth, sqrHght, null);
-            }
-
-            // white pieces
-            g2.drawImage(whiteRook, 30, 34 + (7 - 0) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(whiteKnight, 30 + 1 * sqrWdth, 34 + (7 - 0) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(whiteBishop, 30 + 2 * sqrWdth, 34 + (7 - 0) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(whiteQueen, 30 + 3 * sqrWdth, 34 + (7 - 0) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(whiteKing, 30 + 4 * sqrWdth, 34 + (7 - 0) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(whiteBishop, 30 + 5 * sqrWdth, 34 + (7 - 0) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(whiteKnight, 30 + 6 * sqrWdth, 34 + (7 - 0) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(whiteRook, 30 + 7 * sqrWdth, 34 + (7 - 0) * sqrHght, sqrWdth, sqrHght, null);
-
-            // black pieces
-            g2.drawImage(blackRook, 30, 34 + (7 - 7) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(blackKnight, 30 + 1 * sqrWdth, 34 + (7 - 7) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(blackBishop, 30 + 2 * sqrWdth, 34 + (7 - 7) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(blackQueen, 30 + 3 * sqrWdth, 34 + (7 - 7) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(blackKing, 30 + 4 * sqrWdth, 34 + (7 - 7) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(blackBishop, 30 + 5 * sqrWdth, 34 + (7 - 7) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(blackKnight, 30 + 6 * sqrWdth, 34 + (7 - 7) * sqrHght, sqrWdth, sqrHght, null);
-            g2.drawImage(blackRook, 30 + 7 * sqrWdth, 34 + (7 - 7) * sqrHght, sqrWdth, sqrHght, null);
-
-        } catch (IOException e) {
-            System.err.println("Failed to load pawn image: " + e.getMessage());
         }
     }
 
@@ -186,35 +249,39 @@ class MyCanvas extends JComponent {
         drawPieces(g);
 
         int i, j;
-        int x, y;
-        for (i = 0; i < 8; i++) {
-            for (j = 0; j < 8; j++) {
-                if (state[i][j] == 1) {  // black
-                    g.setColor(Color.black);
-                    x = 30 + 6 + sqrWdth*j;
-                    y = 34 + 6 + sqrHght * (7-i);
-                    g.fillOval(x, y, sqrWdth-12, sqrHght-12);
-                }
-                else if (state[i][j] == 2) { // white
-                    g.setColor(gris);
-                    x = 30 + 6 + sqrWdth*j;
-                    y = 34 + 6 + sqrHght * (7-i);
-                    g.fillOval(x, y, sqrWdth-12, sqrHght-12);
-
-                    //g.setColor(bkgroundColor);
-                    //g.drawOval(x, y, sqrWdth-8, sqrHght-8);
-
-                }
-            }
-        }
 
         int countBlack = 0, countWhite = 0;
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
                 if (state[i][j] == 1)
-                    countBlack ++;
-                else if (state[i][j] == 2)
-                    countWhite ++;
+                    countWhite += 5;
+                else if (state[i][j] == 2) {
+                    countWhite += 3;
+                }
+                else if (state[i][j] == 3) {
+                    countWhite += 3;
+                }
+                else if (state[i][j] == 4) {
+                    countWhite += 9;
+                }
+                else if (state[i][j] == 6) {
+                    countWhite += 1;
+                }
+                else if (state[i][j] == -1) {
+                    countBlack += 5;
+                }
+                else if (state[i][j] == -2) {
+                    countBlack += 3;
+                }
+                else if (state[i][j] == -3) {
+                    countBlack += 3;
+                }
+                else if (state[i][j] == -4) {
+                    countBlack += 9;
+                }
+                else if (state[i][j] == -6) {
+                    countBlack += 1;
+                }
             }
         }
 
@@ -344,106 +411,44 @@ public class Chess extends JFrame {
         }
     }
 
-    public static void checkDirection(int row, int col, int incx, int incy, int turn) {
-        int sequence[] = new int[7];
-        int seqLen;
-        int i, r, c;
-
-        seqLen = 0;
-        for (i = 1; i < 8; i++) {
-            r = row+incy*i;
-            c = col+incx*i;
-
-            if ((r < 0) || (r > 7) || (c < 0) || (c > 7))
-                break;
-
-            sequence[seqLen] = state[r][c];
-            seqLen++;
+    public static void initializeState() {
+        state[0][0] = 1; // white rook
+        state[0][1] = 2; // white knight
+        state[0][2] = 3; // white bishop
+        state[0][3] = 4; // white queen
+        state[0][4] = 5; // white king
+        state[0][5] = 3; // white bishop
+        state[0][6] = 2; // white knight
+        state[0][7] = 1; // white rook
+        for (int i = 0; i < 8; i++) {
+            state[1][i] = 6; // white pawns
         }
 
-        int count = 0;
-        for (i = 0; i < seqLen; i++) {
-            if (turn == 0) {
-                if (sequence[i] == 2)
-                    count ++;
-                else {
-                    if ((sequence[i] == 1) && (count > 0))
-                        count = 20;
-                    break;
-                }
-            }
-            else {
-                if (sequence[i] == 1)
-                    count ++;
-                else {
-                    if ((sequence[i] == 2) && (count > 0))
-                        count = 20;
-                    break;
-                }
-            }
+        state[7][0] = -1; // black rook
+        state[7][1] = -2; // black knight
+        state[7][2] = -3; // black bishop
+        state[7][3] = -4; // black queen
+        state[7][4] = -5; // black king
+        state[7][5] = -3; // black bishop
+        state[7][6] = -2; // black knight
+        state[7][7] = -1; // black rook
+        for (int i = 0; i < 8; i++) {
+            state[6][i] = -6; // black pawns
         }
-
-        if (count > 10) {
-            if (turn == 0) {
-                i = 1;
-                r = row+incy*i;
-                c = col+incx*i;
-                while (state[r][c] == 2) {
-                    state[r][c] = 1;
-                    i++;
-                    r = row+incy*i;
-                    c = col+incx*i;
-                }
-            }
-            else {
-                i = 1;
-                r = row+incy*i;
-                c = col+incx*i;
-                while (state[r][c] == 1) {
-                    state[r][c] = 2;
-                    i++;
-                    r = row+incy*i;
-                    c = col+incx*i;
-                }
-            }
-        }
-    }
-
-    public static void changeColors(int row, int col, int turn) {
-        int incx, incy;
-
-        for (incx = -1; incx < 2; incx++) {
-            for (incy = -1; incy < 2; incy++) {
-                if ((incx == 0) && (incy == 0))
-                    continue;
-
-                checkDirection(row, col, incx, incy, turn);
-            }
-        }
-    }
-
-    public static void printState() {
-        int i, j;
-
-        for (i = 7; i >= 0; i--) {
-            for (j = 0; j < 8; j++) {
-                prnt.print(state[i][j]);
-            }
-            prnt.println();
-        }
-        prnt.println();
     }
 
     public static void playGame(int minutos) {
         int i, j;
-        for (i = 0; i < 8; i++) {
-            for (j = 0; j < 8; j++) {
-                state[i][j] = 0;
-            }
-        }
+//        for (i = 0; i < 8; i++) {
+//            for (j = 0; j < 8; j++) {
+//                state[i][j] = 0;
+//            }
+//        }
 
         double t1 = minutos * 60.0, t2 = minutos * 60.0;
 
+
+        initializeState();
         canvas.updateState(state, 0, t1, t2, winner);
 
         System.out.println("Set up the players");
@@ -467,7 +472,6 @@ public class Chess extends JFrame {
         while (true) {
             //System.out.println("Round: " + round);
             prnt.println("\nRound: " + round);
-            printState();
 
             //System.out.println("Game isn't over yet.");
 
@@ -500,6 +504,7 @@ public class Chess extends JFrame {
             }
             else {
                 mueva = p2.takeTurn(round, state, t1, t2, prnt);
+
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
@@ -527,15 +532,18 @@ public class Chess extends JFrame {
             System.out.println("\nBlack: " + t1 + "\nWhite: " + t2);
 
             if (mueva[0] != -1) {
-                //System.out.println("Move: " + mueva[0] + ", " + mueva[1]);
                 prnt.println("Player " + (turn+1) + ": " + mueva[0] + ", " + mueva[1]);
 
-                state[mueva[0]][mueva[1]] = turn+1;
-
-                changeColors(mueva[0], mueva[1], turn);
+                if (turn == 0) {
+                    state[mueva[0]][mueva[1]] = state[mueva[2]][mueva[3]];
+                    state[mueva[2]][mueva[3]] = 0;
+                }
+                else {
+                    state[mueva[0]][mueva[1]] = state[mueva[2]][mueva[3]];
+                    state[mueva[2]][mueva[3]] = 0;
+                }
 
                 prnt.println("\nAfter move by Player " + (turn+1));
-                printState();
 
                 canvas.updateState(state, 1-turn, t1, t2, winner);
 

@@ -45,110 +45,53 @@ public class Player {
 
     private void getValidMoves(int round, int state[][]) {
         int i, j;
-
         numValidMoves = 0;
-        if (round < 4) {
-            if (state[3][3] == 0) {
-                validMoves[numValidMoves] = 3*8 + 3;
-                numValidMoves ++;
-            }
-            if (state[3][4] == 0) {
-                validMoves[numValidMoves] = 3*8 + 4;
-                numValidMoves ++;
-            }
-            if (state[4][3] == 0) {
-                validMoves[numValidMoves] = 4*8 + 3;
-                numValidMoves ++;
-            }
-            if (state[4][4] == 0) {
-                validMoves[numValidMoves] = 4*8 + 4;
-                numValidMoves ++;
-            }
-            //System.out.println("Valid Moves:");
-            //for (i = 0; i < numValidMoves; i++) {
-            //    System.out.println(validMoves[i] / 8 + ", " + validMoves[i] % 8);
-            //}
-        }
-        else {
-            //System.out.println("Valid Moves:");
-            for (i = 0; i < 8; i++) {
-                for (j = 0; j < 8; j++) {
-                    if (state[i][j] == 0) {
-                        if (couldBe(state, i, j)) {
-                            validMoves[numValidMoves] = i*8 + j;
-                            numValidMoves ++;
-                            //System.out.println(i + ", " + j);
-                        }
-                    }
+
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                validMoves[numValidMoves] = (i*8) + j;
+                if (numValidMoves < 63) {
+                    numValidMoves++;
                 }
             }
         }
-
-
-        //if (round > 3) {
-        //    System.out.println("checking out");
-        //    System.exit(1);
-        //}
+//        if (round < 4) {
+//            if (state[3][3] == 0) {
+//                validMoves[numValidMoves] = 3*8 + 3;
+//                numValidMoves ++;
+//            }
+//            if (state[3][4] == 0) {
+//                validMoves[numValidMoves] = 3*8 + 4;
+//                numValidMoves ++;
+//            }
+//            if (state[4][3] == 0) {
+//                validMoves[numValidMoves] = 4*8 + 3;
+//                numValidMoves ++;
+//            }
+//            if (state[4][4] == 0) {
+//                validMoves[numValidMoves] = 4*8 + 4;
+//                numValidMoves ++;
+//            }
+//            //System.out.println("Valid Moves:");
+//            //for (i = 0; i < numValidMoves; i++) {
+//            //    System.out.println(validMoves[i] / 8 + ", " + validMoves[i] % 8);
+//            //}
+//        }
+//        else {
+//            //System.out.println("Valid Moves:");
+//            for (i = 0; i < 8; i++) {
+//                for (j = 0; j < 8; j++) {
+//                    if (state[i][j] == 0) {
+//                        if (couldBe(state, i, j)) {
+//                            validMoves[numValidMoves] = i*8 + j;
+//                            numValidMoves ++;
+//                            //System.out.println(i + ", " + j);
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
-
-    private boolean checkDirection(int state[][], int row, int col, int incx, int incy) {
-        int sequence[] = new int[7];
-        int seqLen;
-        int i, r, c;
-
-        seqLen = 0;
-        for (i = 1; i < 8; i++) {
-            r = row+incy*i;
-            c = col+incx*i;
-
-            if ((r < 0) || (r > 7) || (c < 0) || (c > 7))
-                break;
-
-            sequence[seqLen] = state[r][c];
-            seqLen++;
-        }
-
-        int count = 0;
-        for (i = 0; i < seqLen; i++) {
-            if (me == 1) {
-                if (sequence[i] == 2)
-                    count ++;
-                else {
-                    if ((sequence[i] == 1) && (count > 0))
-                        return true;
-                    break;
-                }
-            }
-            else {
-                if (sequence[i] == 1)
-                    count ++;
-                else {
-                    if ((sequence[i] == 2) && (count > 0))
-                        return true;
-                    break;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private boolean couldBe(int state[][], int row, int col) {
-        int incx, incy;
-
-        for (incx = -1; incx < 2; incx++) {
-            for (incy = -1; incy < 2; incy++) {
-                if ((incx == 0) && (incy == 0))
-                    continue;
-
-                if (checkDirection(state, row, col, incx, incy))
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
 
     public int[] takeTurn(int round, int state[][], double t1, double t2, PrintWriter prnt) {
         // first, check to see if this player has any valid moves
@@ -172,11 +115,11 @@ public class Player {
 
         //System.out.println("Turn for " + me + "; Round " + round);
 
-        int mueva[] = new int[2];
+        int mueva[] = new int[4];
         try {
             // tell the player the world state
             boolean valid = false;
-            int row = -1, col = -1;
+            int targetRow = -1, targetCol = -1, fromRow = -1, fromCol = -1;
             while (!valid) {
                 String status = me + "\n" + round + "\n" + t1 + "\n" + t2 + "\n";
                 for (i = 0; i < 8; i++) {
@@ -187,12 +130,14 @@ public class Player {
                 sout.println(status);
 
                 // receive the players move
-                row = Integer.parseInt(sin.readLine());
-                col = Integer.parseInt(sin.readLine());
+                targetRow = Integer.parseInt(sin.readLine().trim());
+                targetCol = Integer.parseInt(sin.readLine().trim());
+                fromRow = Integer.parseInt(sin.readLine().trim());
+                fromCol = Integer.parseInt(sin.readLine().trim());
 
                 // check to see whether the move is a valid move
                 for (i = 0; i < numValidMoves; i++) {
-                    if ((row == (validMoves[i] / 8)) && (col == (validMoves[i] % 8))) {
+                    if ((targetRow == (validMoves[i] / 8)) && (targetCol == (validMoves[i] % 8))) {
                         valid = true;
                         break;
                     }
@@ -200,8 +145,10 @@ public class Player {
             }
 
             // return the move
-            mueva[0] = row;
-            mueva[1] = col;
+            mueva[0] = targetRow;
+            mueva[1] = targetCol;
+            mueva[2] = fromRow;
+            mueva[3] = fromCol;
         } catch (IOException e) {
             System.err.println("Caught IOException: " + e.getMessage());
         }
@@ -235,5 +182,4 @@ public class Player {
         }
         sout.println(status);
     }
-
 }
