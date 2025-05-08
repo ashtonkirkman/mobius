@@ -1,3 +1,5 @@
+package Chess;
+
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
@@ -16,7 +18,7 @@ public class Player {
     PrintWriter sout;
     BufferedReader sin;
 
-    int validMoves[] = new int[64];
+    ChessMove validMoves[] = new ChessMove[100];
     int numValidMoves;
 
     Player(int _me, int minutos) {
@@ -47,50 +49,29 @@ public class Player {
         int i, j;
         numValidMoves = 0;
 
+        ChessBoard board = new ChessBoard(state);
+        ChessPiece currentPiece;
+        ChessPiece.TeamColor myColor = me == 1 ? ChessPiece.TeamColor.WHITE : ChessPiece.TeamColor.BLACK;
+        Collection<ChessMove> pieceMoves;
+
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
-                validMoves[numValidMoves] = (i*8) + j;
-                if (numValidMoves < 63) {
+                currentPiece = board.getPiece(new ChessPosition(i+1, j+1));
+                if (currentPiece == null || currentPiece.getTeamColor() != myColor) {
+                    continue;
+                }
+                // check to see if the piece can move
+                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), board);
+                if (pieceMoves.isEmpty()) {
+                    continue;
+                }
+                // add piece moves to the list of valid moves
+                for (ChessMove move : pieceMoves) {
+                    validMoves[numValidMoves] = move;
                     numValidMoves++;
                 }
             }
         }
-//        if (round < 4) {
-//            if (state[3][3] == 0) {
-//                validMoves[numValidMoves] = 3*8 + 3;
-//                numValidMoves ++;
-//            }
-//            if (state[3][4] == 0) {
-//                validMoves[numValidMoves] = 3*8 + 4;
-//                numValidMoves ++;
-//            }
-//            if (state[4][3] == 0) {
-//                validMoves[numValidMoves] = 4*8 + 3;
-//                numValidMoves ++;
-//            }
-//            if (state[4][4] == 0) {
-//                validMoves[numValidMoves] = 4*8 + 4;
-//                numValidMoves ++;
-//            }
-//            //System.out.println("Valid Moves:");
-//            //for (i = 0; i < numValidMoves; i++) {
-//            //    System.out.println(validMoves[i] / 8 + ", " + validMoves[i] % 8);
-//            //}
-//        }
-//        else {
-//            //System.out.println("Valid Moves:");
-//            for (i = 0; i < 8; i++) {
-//                for (j = 0; j < 8; j++) {
-//                    if (state[i][j] == 0) {
-//                        if (couldBe(state, i, j)) {
-//                            validMoves[numValidMoves] = i*8 + j;
-//                            numValidMoves ++;
-//                            //System.out.println(i + ", " + j);
-//                        }
-//                    }
-//                }
-//            }
-//        }
     }
 
     public int[] takeTurn(int round, int state[][], double t1, double t2, PrintWriter prnt) {
@@ -100,7 +81,7 @@ public class Player {
         int i, j;
         prnt.println("Valid moves for " + me + ":");
         for (i = 0; i < numValidMoves; i++) {
-            prnt.println((validMoves[i] / 8) + ", " + (validMoves[i] % 8));
+            prnt.println(validMoves[i]);
         }
         prnt.println();
 
@@ -115,7 +96,7 @@ public class Player {
 
         //System.out.println("Turn for " + me + "; Round " + round);
 
-        int mueva[] = new int[4];
+        int mueva[] = new int[5];
         try {
             // tell the player the world state
             boolean valid = false;
@@ -137,9 +118,22 @@ public class Player {
 
                 // check to see whether the move is a valid move
                 for (i = 0; i < numValidMoves; i++) {
-                    if ((targetRow == (validMoves[i] / 8)) && (targetCol == (validMoves[i] % 8))) {
-                        valid = true;
-                        break;
+                    if ((targetRow == (validMoves[i].getEndPosition().getRow() - 1)) && (targetCol == (validMoves[i].getEndPosition().getColumn() - 1))) {
+                        if ((fromRow == (validMoves[i].getStartPosition().getRow() - 1)) && (fromCol == (validMoves[i].getStartPosition().getColumn() - 1))) {
+                            valid = true;
+                            if (me == 1) {
+//                                mueva[4] = validMoves[i].getPromotionPiece() == ChessPiece.PieceType.BISHOP ? 3 : validMoves[i].getPromotionPiece() == ChessPiece.PieceType.KNIGHT ? 2 : validMoves[i].getPromotionPiece() == ChessPiece.PieceType.ROOK ? 1 : validMoves[i].getPromotionPiece() == ChessPiece.PieceType.QUEEN ? 4 : 0;
+                                if (validMoves[i].getPromotionPiece() != null) {
+                                    mueva[4] = 4;
+                                }
+                            } else {
+//                                mueva[4] = validMoves[i].getPromotionPiece() == ChessPiece.PieceType.BISHOP ? -3 : validMoves[i].getPromotionPiece() == ChessPiece.PieceType.KNIGHT ? -2 : validMoves[i].getPromotionPiece() == ChessPiece.PieceType.ROOK ? -1 : validMoves[i].getPromotionPiece() == ChessPiece.PieceType.QUEEN ? -4 : 0;
+                                if (validMoves[i].getPromotionPiece() != null) {
+                                    mueva[4] = -4;
+                                }
+                            }
+                            break;
+                        }
                     }
                 }
             }

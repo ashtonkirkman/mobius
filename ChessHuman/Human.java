@@ -1,3 +1,8 @@
+import Chess.ChessBoard;
+import Chess.ChessMove;
+import Chess.ChessPiece;
+import Chess.ChessPosition;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.*;
@@ -335,6 +340,7 @@ class MyCanvas extends JComponent {
                 }
             }
         }
+
         if (countBlack > countWhite) {
             countBlack = countBlack - countWhite;
             countWhite = 0;
@@ -349,16 +355,16 @@ class MyCanvas extends JComponent {
         int xanchor = 180;
 
         g.setColor(Color.black);
-        String blackStr = "" + countBlack;
+        String whiteStr = "" + countWhite;
 
         if (theMe == 1)
             g.drawString("White (you):", xanchor-45, height - 58);
         else
             g.drawString("White:", xanchor-45, height - 58);
         if (countBlack < 10)
-            g.drawString(blackStr, xanchor + 110, height - 58);
+            g.drawString(whiteStr, xanchor + 110, height - 58);
         else
-            g.drawString(blackStr, xanchor + 104, height - 58);
+            g.drawString(whiteStr, xanchor + 104, height - 58);
 
         int min = (int)(t1 / 60);
         int sec = (int)(t1+0.5) % 60;
@@ -385,11 +391,11 @@ class MyCanvas extends JComponent {
             g.drawString("Black (you):", xanchor-45, height - 32);
         else
             g.drawString("Black:", xanchor-45, height - 32);
-        String whiteStr = "" + countWhite;
-        if (countWhite < 10)
-            g.drawString(whiteStr, xanchor + 110, height - 32);
+        String blackStr = "" + countBlack;
+        if (countBlack < 10)
+            g.drawString(blackStr, xanchor + 110, height - 32);
         else
-            g.drawString(whiteStr, xanchor + 104, height - 32);
+            g.drawString(blackStr, xanchor + 104, height - 32);
 
         if (!gameOver) {
             if ((turn == 1) || ((turn == -1) && (theMe == 2)))
@@ -433,12 +439,12 @@ class MyCanvas extends JComponent {
         }
 
         if (winner > 0) {
-            if (winner == 1) {
+            if (winner == 2) {
                 g.setColor(Color.red);
                 g.drawRect(115, height - 76, 316, 24);
                 g.drawRect(116, height - 75, 314, 22);
             }
-            else if (winner == 2) {
+            else if (winner == 1) {
                 g.setColor(Color.red);
                 g.drawRect(115, height - 50, 316, 24);
                 g.drawRect(116, height - 49, 314, 22);
@@ -471,7 +477,7 @@ class Human extends JFrame {
     int firstClickY = -1;
     boolean waitingForSecondClick = false;
 
-    int validMoves[] = new int[64];
+    ChessMove validMoves[] = new ChessMove[100];
     int numValidMoves;
 
     public Human(int _me, String host) {
@@ -518,7 +524,6 @@ class Human extends JFrame {
         Random generator = new Random();
         initClient(host);
         canvas.initializeState();
-//        canvas.printState();
 
         int myMove;
 
@@ -533,13 +538,9 @@ class Human extends JFrame {
             canvas.updateState(state, turn, t1, t2, winner);
 
             if (turn == theMe) {
-                //System.out.println("Move");
 
-                getValidMoves(round, state);
+                getValidMoves(state);
 
-                //myMove = generator.nextInt(numValidMoves);        // select a move randomly
-
-                // wait for a click
                 nMouseX = -1;
                 waitingForSecondClick = false;
                 while (nMouseX == -1 || waitingForSecondClick) {
@@ -557,8 +558,6 @@ class Human extends JFrame {
                 }
                 String sel = nMouseY + "\n" + nMouseX + "\n" + firstClickY + "\n" + firstClickX;
 
-                //System.out.println("Selection: " + nMouseY + ", " + nMouseX);
-
                 sout.println(sel);
             }
         }
@@ -567,17 +566,30 @@ class Human extends JFrame {
         canvas.updateState(state, -1, t1, t2, winner);
     }
 
-    private void getValidMoves(int round, int state[][]) {
+    private void getValidMoves(int state[][]) {
         int i, j;
         numValidMoves = 0;
 
+        ChessBoard board = new ChessBoard(state);
+        ChessPiece currentPiece;
+        ChessPiece.TeamColor myColor = theMe == 1 ? ChessPiece.TeamColor.WHITE : ChessPiece.TeamColor.BLACK;
+        Collection<ChessMove> pieceMoves;
+
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
-                if(state[i][j] == 0) {
-                    validMoves[numValidMoves] = (i*8) + j;
-                    if (numValidMoves < 63) {
-                        numValidMoves++;
-                    }
+                currentPiece = board.getPiece(new ChessPosition(i+1, j+1));
+                if (currentPiece == null || currentPiece.getTeamColor() != myColor) {
+                    continue;
+                }
+                // check to see if the piece can move
+                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), board);
+                if (pieceMoves.isEmpty()) {
+                    continue;
+                }
+                // add piece moves to the list of valid moves
+                for (ChessMove move : pieceMoves) {
+                    validMoves[numValidMoves] = move;
+                    numValidMoves++;
                 }
             }
         }

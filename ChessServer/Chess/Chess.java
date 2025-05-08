@@ -1,3 +1,4 @@
+package Chess;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -285,6 +286,17 @@ class MyCanvas extends JComponent {
             }
         }
 
+        if (countBlack > countWhite) {
+            countBlack = countBlack - countWhite;
+            countWhite = 0;
+        } else if (countBlack < countWhite) {
+            countWhite = countWhite - countBlack;
+            countBlack = 0;
+        } else {
+            countWhite = 0;
+            countBlack = 0;
+        }
+
         int xanchor = 150;
 
         g.setColor(Color.black);
@@ -403,7 +415,7 @@ public class Chess extends JFrame {
         setTitle("Chess -- Server");
 
         try {
-            fnombre = "GameLog.txt";
+            fnombre = "ChessServer\\Chess\\GameLog.txt";
             wrte = new FileWriter(fnombre, false);
             prnt = new PrintWriter(wrte);
         } catch (IOException e) {
@@ -534,8 +546,8 @@ public class Chess extends JFrame {
             if (mueva[0] != -1) {
                 prnt.println("Player " + (turn+1) + ": " + mueva[0] + ", " + mueva[1]);
 
-                if (turn == 0) {
-                    state[mueva[0]][mueva[1]] = state[mueva[2]][mueva[3]];
+                if (mueva[4] != 0) {
+                    state[mueva[0]][mueva[1]] = mueva[4];
                     state[mueva[2]][mueva[3]] = 0;
                 }
                 else {
@@ -562,10 +574,11 @@ public class Chess extends JFrame {
             }
             else {
                 prnt.println("Player " + (turn+1) + " can't move");
+                winner = 1 - turn;
                 nocount ++;
             }
 
-            if (nocount == 2) {
+            if (nocount == 1) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -580,78 +593,19 @@ public class Chess extends JFrame {
             }
 
             turn = 1 - turn;
-
-            System.out.println("Turn: " + turn);
-
-            int countBlack = 0, countWhite = 0;
-            for (i = 0; i < 8; i++) {
-                for (j = 0; j < 8; j++) {
-                    if (state[i][j] == 1)
-                        countBlack ++;
-                    else if (state[i][j] == 2)
-                        countWhite ++;
-                }
-            }
-
-            System.out.println("\nBlack: " + countBlack + "\nWhite: " + countWhite);
         }
 
         System.out.println("Game Over!");
 
-        int countBlack = 0, countWhite = 0;
-        for (i = 0; i < 8; i++) {
-            for (j = 0; j < 8; j++) {
-                if (state[i][j] == 1)
-                    countBlack ++;
-                else if (state[i][j] == 2)
-                    countWhite ++;
-            }
-        }
-
-        // declare the winner and update all information
         if (t1 <= 0.0) {
             winner = 2;
-            t1 = 0.0;
-
-            for (i = 0; i < 8; i++) {
-                for (j = 0; j < 8; j++) {
-                    if (state[i][j] == 1)
-                        state[i][j] = 0;
-                }
-            }
-            countBlack = 0;
         }
         else if (t2 <= 0.0) {
             winner = 1;
-            t2 = 0.0;
-            for (i = 0; i < 8; i++) {
-                for (j = 0; j < 8; j++) {
-                    if (state[i][j] == 2)
-                        state[i][j] = 0;
-                }
-            }
-            countWhite = 0;
         }
-        else {
-            if (countBlack > countWhite)
-                winner = 1;
-            else if (countWhite > countBlack)
-                winner = 2;
 
-            // give empty squares to the winner
-            for (i = 0; i < 8; i++) {
-                for (j = 0; j < 8; j++) {
-                    if (state[i][j] == 0) {
-                        state[i][j] = winner;
-                        if (winner == 1)
-                            countBlack ++;
-                        else
-                            countWhite ++;
-                    }
-                }
-            }
-
-        }
+        int countBlack = 1;
+        int countWhite = 1;
 
         prnt.println("\nBlack: " + countBlack + "\nWhite: " + countWhite + "\n");
         canvas.updateState(state, 1-turn, t1, t2, winner);

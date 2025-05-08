@@ -1,3 +1,8 @@
+import Chess.ChessBoard;
+import Chess.ChessMove;
+import Chess.ChessPiece;
+import Chess.ChessPosition;
+
 import java.util.*;
 import java.lang.*;
 import java.io.*;
@@ -18,7 +23,7 @@ class RandomGuy {
     int turn = -1;
     int round;
 
-    int validMoves[] = new int[64];
+    ChessMove validMoves[] = new ChessMove[100];
     int numValidMoves;
 
     static final Map<Integer, Character> pieceMap = new HashMap<>();
@@ -55,20 +60,17 @@ class RandomGuy {
         int myMove;
 
         while (true) {
-            System.out.println("Read");
             readMessage();
 
-            System.out.println("me " + me);
-
             if (turn == me) {
-                System.out.println("Move");
                 getValidMoves(round, state);
                 myMove = move();
                 //myMove = generator.nextInt(numValidMoves);        // select a move randomly
                 getValidMoves(round, state);
-                String sel = validMoves[myMove] / 8 + "\n" + validMoves[myMove] % 8;
-
-                System.out.println("Selection: " + validMoves[myMove] / 8 + ", " + validMoves[myMove] % 8);
+                String sel = validMoves[myMove].getEndPosition().getRow() - 1 + "\n" +
+                        (validMoves[myMove].getEndPosition().getColumn() - 1) + "\n" +
+                        (validMoves[myMove].getStartPosition().getRow() - 1) + "\n" +
+                        (validMoves[myMove].getStartPosition().getColumn() - 1);
 
                 sout.println(sel);
             }
@@ -261,13 +263,26 @@ class RandomGuy {
         int i, j;
         numValidMoves = 0;
 
+        ChessBoard board = new ChessBoard(state);
+        ChessPiece currentPiece;
+        ChessPiece.TeamColor myColor = me == 1 ? ChessPiece.TeamColor.WHITE : ChessPiece.TeamColor.BLACK;
+        Collection<ChessMove> pieceMoves;
+
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
-                if(state[i][j] == 0) {
-                    validMoves[numValidMoves] = (i*8) + j;
-                    if (numValidMoves < 63) {
-                        numValidMoves++;
-                    }
+                currentPiece = board.getPiece(new ChessPosition(i+1, j+1));
+                if (currentPiece == null || currentPiece.getTeamColor() != myColor) {
+                    continue;
+                }
+                // check to see if the piece can move
+                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), board);
+                if (pieceMoves.isEmpty()) {
+                    continue;
+                }
+                // add piece moves to the list of valid moves
+                for (ChessMove move : pieceMoves) {
+                    validMoves[numValidMoves] = move;
+                    numValidMoves++;
                 }
             }
         }
@@ -324,9 +339,7 @@ class RandomGuy {
             //System.out.println("Turn: " + turn);
             round = Integer.parseInt(sin.readLine());
             t1 = Double.parseDouble(sin.readLine());
-            System.out.println(t1);
             t2 = Double.parseDouble(sin.readLine());
-            System.out.println(t2);
             for (i = 0; i < 8; i++) {
                 for (j = 0; j < 8; j++) {
                     state[i][j] = Integer.parseInt(sin.readLine());
@@ -336,16 +349,6 @@ class RandomGuy {
         } catch (IOException e) {
             System.err.println("Caught IOException: " + e.getMessage());
         }
-
-        System.out.println("Turn: " + turn);
-        System.out.println("Round: " + round);
-        for (i = 7; i >= 0; i--) {
-            for (j = 0; j < 8; j++) {
-                System.out.print(state[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.println();
     }
 
     public void initClient(String host) {
@@ -357,7 +360,6 @@ class RandomGuy {
             sin = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
             String info = sin.readLine();
-            System.out.println(info);
         } catch (IOException e) {
             System.err.println("Caught IOException: " + e.getMessage());
         }
