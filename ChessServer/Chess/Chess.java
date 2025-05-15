@@ -546,6 +546,35 @@ public class Chess extends JFrame {
             if (mueva[0] != -1) {
                 prnt.println("Player " + (turn+1) + ": " + mueva[0] + ", " + mueva[1]);
 
+                // mueva[0] = toRow
+                // mueva[1] = toCol
+                // mueva[2] = fromRow
+                // mueva[3] = fromCol
+                // mueva[4] = promotion piece
+                boolean castling = (state[mueva[2]][mueva[3]] == 5 || state[mueva[2]][mueva[3]] == -5) && (Math.abs(mueva[3] - mueva[1]) > 1);
+                System.out.println(state[mueva[2]][mueva[3]]);
+                System.out.println(castling);
+                if (castling) {
+                    if (mueva[1] == 6) {
+                        if (mueva[0] == 0) {
+                            state[0][5] = 1;
+                            state[0][7] = 0;
+                        }
+                        else if (mueva[0] == 7) {
+                            state[7][5] = -1;
+                            state[7][7] = 0;
+                        }
+                    } else if (mueva[1] == 2) {
+                        if (mueva[0] == 0) {
+                            state[0][3] = 1;
+                            state[0][0] = 0;
+                        }
+                        else if (mueva[0] == 7) {
+                            state[7][3] = -1;
+                            state[7][0] = 0;
+                        }
+                    }
+                }
                 if (mueva[4] != 0) {
                     state[mueva[0]][mueva[1]] = mueva[4];
                     state[mueva[2]][mueva[3]] = 0;

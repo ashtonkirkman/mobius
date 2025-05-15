@@ -18,35 +18,43 @@ public class ChessPiece {
     // add main method
     public static void main(String[] args) {
         int state[][] = {
-                {0, 0, 3, 4, 5, 3, 2, 1},
-                {-6, 0, 6, 6, 6, 6, 6, 6},
+//                {0, 0, 3, 4, 5, 3, 2, 1},
+//                {-6, 0, 6, 6, 6, 6, 6, 6},
+//                {0, 0, 0, 0, 0, 0, 0, 0},
+//                {0, 0, 0, 0, 0, 0, 0, 0},
+//                {0, 0, 0, 0, 0, 0, 0, 0},
+//                {0, 0, 0, 0, 0, 0, 0, 0},
+//                {-6,-6,-6,-6,-6,-6,-6,-6},
+//                {-1,-2,-3,-4,-5,-3,-2,-1}
+                {1, 0, 0, 0, 5, 0, 0, 1},
                 {0, 0, 0, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0},
-                {-6,-6,-6,-6,-6,-6,-6,-6},
-                {-1,-2,-3,-4,-5,-3,-2,-1}
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 0, 0, 0},
+                {-1, 0, 0, 0, -5, 0, 0, -1}
         };
         ChessBoard myBoard = new ChessBoard(state);
+        System.out.println(myBoard);
         int me = 2;
         ChessMove validMoves[] = new ChessMove[100];
         int numValidMoves = 0;
 
         int i, j;
 
-        ChessBoard board = new ChessBoard(state);
         ChessPiece currentPiece;
         ChessPiece.TeamColor myColor = me == 1 ? ChessPiece.TeamColor.WHITE : ChessPiece.TeamColor.BLACK;
         Collection<ChessMove> pieceMoves;
 
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
-                currentPiece = board.getPiece(new ChessPosition(i+1, j+1));
+                currentPiece = myBoard.getPiece(new ChessPosition(i+1, j+1));
                 if (currentPiece == null || currentPiece.getTeamColor() != myColor) {
                     continue;
                 }
                 // check to see if the piece can move
-                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), board);
+                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), myBoard, false);
                 if (pieceMoves.isEmpty()) {
                     continue;
                 }
@@ -200,6 +208,41 @@ public class ChessPiece {
                             if(isValidMove(destinationPiece, destination)) {
                                 addMove(validMoves, myPosition, destination);
                             }
+                        }
+                    }
+                }
+                // Add castling functionality
+                if(currentRank == 1 && currentFile == 5) {
+                    // White king side castling
+                    if(board.getPiece(new ChessPosition(1, 6)) == null && board.getPiece(new ChessPosition(1, 7)) == null) {
+                        ChessPiece rook = board.getPiece(new ChessPosition(1, 8));
+                        if(rook != null && rook.getPieceType() == PieceType.ROOK && rook.getTeamColor() == TeamColor.WHITE) {
+                            addMove(validMoves, myPosition, new ChessPosition(1, 7));
+                        }
+                    }
+                    // White queen side castling
+                    if(board.getPiece(new ChessPosition(1, 4)) == null && board.getPiece(new ChessPosition(1, 3)) == null &&
+                            board.getPiece(new ChessPosition(1, 2)) == null) {
+                        ChessPiece rook = board.getPiece(new ChessPosition(1, 1));
+                        if(rook != null && rook.getPieceType() == PieceType.ROOK && rook.getTeamColor() == TeamColor.WHITE) {
+                            addMove(validMoves, myPosition, new ChessPosition(1, 3));
+                        }
+                    }
+                }
+                else if(currentRank == 8 && currentFile == 5) {
+                    // Black king side castling
+                    if(board.getPiece(new ChessPosition(8, 6)) == null && board.getPiece(new ChessPosition(8, 7)) == null) {
+                        ChessPiece rook = board.getPiece(new ChessPosition(8, 8));
+                        if(rook != null && rook.getPieceType() == PieceType.ROOK && rook.getTeamColor() == TeamColor.BLACK) {
+                            addMove(validMoves, myPosition, new ChessPosition(8, 7));
+                        }
+                    }
+                    // Black queen side castling
+                    if(board.getPiece(new ChessPosition(8, 4)) == null && board.getPiece(new ChessPosition(8, 3)) == null &&
+                            board.getPiece(new ChessPosition(8, 2)) == null) {
+                        ChessPiece rook = board.getPiece(new ChessPosition(8, 1));
+                        if(rook != null && rook.getPieceType() == PieceType.ROOK && rook.getTeamColor() == TeamColor.BLACK) {
+                            addMove(validMoves, myPosition, new ChessPosition(8, 3));
                         }
                     }
                 }
@@ -357,7 +400,7 @@ public class ChessPiece {
         return false;
     }
 
-    public Collection<ChessMove> validMoves(ChessPosition startPosition, ChessBoard board) {
+    public Collection<ChessMove> validMoves(ChessPosition startPosition, ChessBoard board, boolean captureKingAllowed) {
         ChessPiece currentPiece = board.getPiece(startPosition);
         if (currentPiece == null) {
             return null;
@@ -366,35 +409,18 @@ public class ChessPiece {
         Collection<ChessMove> potentiallyValidMoves = currentPiece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new HashSet<>();
         ChessPiece capturedPiece;
-        for (ChessMove move : potentiallyValidMoves) {
-            capturedPiece = this.testMove(move, board);
-            if(!this.isInCheck(currentColor, board)) {
-                validMoves.add(move);
-            }
-            this.undoMove(move, capturedPiece, board);
+        if (captureKingAllowed) {
+            validMoves.addAll(potentiallyValidMoves);
         }
-//        if (currentPiece.getPieceType() == ChessPiece.PieceType.KING) {
-//            for (int i = 0; i < 8; i++) {
-//                for (int j = 0; j < 8; j++) {
-//                    ChessPosition destination = new ChessPosition(i + 1, j + 1);
-//                    if (board.getPiece(destination) == null) {
-//                        continue;
-//                    }
-//                    ChessPiece piece = board.getPiece(destination);
-//                    if (piece.getTeamColor() != currentColor) {
-//                        continue;
-//                    }
-//                    Collection<ChessMove> moves = piece.pieceMoves(board, destination);
-//                    for (ChessMove move : moves) {
-//                        capturedPiece = this.testMove(move, board);
-//                        if(!this.isInCheck(currentColor, board)) {
-//                            validMoves.add(new ChessMove(startPosition, destination, null));
-//                        }
-//                        this.undoMove(move, capturedPiece, board);
-//                    }
-//                }
-//            }
-//        }
+        else {
+            for (ChessMove move : potentiallyValidMoves) {
+                capturedPiece = this.testMove(move, board);
+                if (!this.isInCheck(currentColor, board)) {
+                    validMoves.add(move);
+                }
+                this.undoMove(move, capturedPiece, board);
+            }
+        }
         return validMoves;
     }
 

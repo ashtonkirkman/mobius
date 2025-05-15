@@ -21,15 +21,18 @@ class SmartGuy {
     public int state[][] = new int[8][8]; // state[0][0] is the bottom left corner of the board (on the GUI)
     int turn = -1;
     int round;
+    int nodes = 0;
+    private static final int MAX_QUIESCENCE_DEPTH = 4;
 
     ChessMove validMoves[] = new ChessMove[100];
     int numValidMoves;
+    Evaluation eval = new Evaluation();
 
     public static class Result {
-        public double value;
+        public int value;
         public int index;
 
-        public Result(double value, int index) {
+        public Result(int value, int index) {
             this.value = value;
             this.index = index;
         }
@@ -65,14 +68,16 @@ class SmartGuy {
     public SmartGuy(int _me, String host) {
         me = _me;
         initClient(host);
-
         int myMove;
+
+        eval.initTables();
 
         while (true) {
             readMessage();
 
             if (turn == me) {
                 getGlobalValidMoves(state);
+
                 myMove = move();
                 //myMove = generator.nextInt(numValidMoves);        // select a move randomly
                 getGlobalValidMoves(state);
@@ -88,11 +93,27 @@ class SmartGuy {
     }
 
     private int move() {
-        int depth = 4;
+        int depth;
+//        if (round <= 2) {
+//            depth = 2;
+//        } else if (round <= 6) {
+//            depth = 4;
+//        } else if (round <= 20) {
+//            depth = 5;
+//        } else if (round <= 40) {
+//            depth = 6;
+//        } else if (round <= 80) {
+//            depth = 7;
+//        } else {
+//            depth = 8;
+//        }
+        depth = 4;
+
         boolean maximizing = me == 1;
 
-        Result result = minimax(state, depth, me, maximizing, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+        Result result = minimax(state, depth, me, maximizing, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
+        System.out.println("Nodes: " + nodes);
         return result.index;
     }
 
@@ -104,17 +125,24 @@ class SmartGuy {
         return copy;
     }
 
-    private Result minimax(int[][] board, int depth, int currentPlayer, boolean maximizing, double alpha, double beta) {
+    private Result minimax(int[][] board, int depth, int currentPlayer, boolean maximizing, int alpha, int beta) {
         if (depth == 0) {
-            return new Result(heuristic(board), 0);
+//            ChessBoard printBoard = new ChessBoard(board);
+//            System.out.println(printBoard);
+//            return new Result(heuristic(board), 0);
+            return new Result(quiescence(board, maximizing, currentPlayer, alpha, beta, 0), 0);
         }
 
-        List<ChessMove> moves = getValidMoves(currentPlayer, board);
+        List<ChessMove> moves = getValidMoves(currentPlayer, board, false);
         if (moves.isEmpty()) {
-            return new Result(heuristic(board), 0);
+//            ChessBoard printBoard = new ChessBoard(board);
+//            System.out.println(printBoard);
+//            return new Result(heuristic(board), 0);
+            return new Result(quiescence(board, maximizing, currentPlayer, alpha, beta, 0), 0);
         }
 
-        double bestValue = maximizing ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
+        nodes++;
+        int bestValue = maximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         int bestIndex = 0;
 
         for (int i = 0; i < moves.size(); i++) {
@@ -144,8 +172,67 @@ class SmartGuy {
         return new Result(bestValue, bestIndex);
     }
 
-    private double heuristic(int[][] board) {
-        return getMaterialDisparity(board);
+    private int quiescence(int[][] board, boolean maximizing, int currentPlayer, int alpha, int beta, int depth) {
+        if (depth >= MAX_QUIESCENCE_DEPTH) {
+            return heuristic(board);
+        }
+
+        int evaluation = heuristic(board);
+
+//        if (evaluation >= beta) {
+//            return beta;
+//        }
+//
+//        if (evaluation > alpha) {
+//            alpha = evaluation;
+//        }
+
+        if (maximizing) {
+            if (evaluation >= beta) return beta;
+            if (evaluation > alpha) alpha = evaluation;
+        } else {
+            if (evaluation <= alpha) return alpha;
+            if (evaluation < beta) beta = evaluation;
+        }
+
+        List<ChessMove> moves = getValidMoves(currentPlayer, board, true);
+        if (moves.isEmpty()) {
+            return evaluation;
+        }
+
+        int bestValue = maximizing ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+
+        for (ChessMove move : moves) {
+            int[][] newBoard = getNewState(board, move, currentPlayer);
+            int score = quiescence(newBoard, !maximizing, currentPlayer == 2 ? 1 : 2, alpha, beta, depth + 1);
+
+            if (maximizing) {
+                if (score > bestValue) {
+                    bestValue = score;
+                }
+                alpha = Math.max(alpha, bestValue);
+            } else {
+                if (score < bestValue) {
+                    bestValue = score;
+                }
+                beta = Math.min(beta, bestValue);
+            }
+
+            if (beta <= alpha) {
+                break;
+            }
+        }
+
+        return bestValue;
+
+    }
+
+    private int heuristic(int[][] state) {
+//        return getMaterialDisparity(board);
+        int evaluation = eval.eval(state);
+
+//        System.out.println(evaluation);
+        return evaluation;
     }
 
     private double getMaterialDisparity(int[][] board) {
@@ -155,33 +242,29 @@ class SmartGuy {
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
                 if (board[i][j] == 1)
-                    countWhite += 5;
+                    countWhite += 500;
                 else if (board[i][j] == 2) {
-                    countWhite += 3;
-                }
-                else if (board[i][j] == 3) {
-                    countWhite += 3;
-                }
-                else if (board[i][j] == 4) {
-                    countWhite += 9;
-                }
-                else if (board[i][j] == 6) {
-                    countWhite += 1;
-                }
-                else if (board[i][j] == -1) {
-                    countBlack += 5;
-                }
-                else if (board[i][j] == -2) {
-                    countBlack += 3;
-                }
-                else if (board[i][j] == -3) {
-                    countBlack += 3;
-                }
-                else if (board[i][j] == -4) {
-                    countBlack += 9;
-                }
-                else if (board[i][j] == -6) {
-                    countBlack += 1;
+                    countWhite += 320;
+                } else if (board[i][j] == 3) {
+                    countWhite += 330;
+                } else if (board[i][j] == 4) {
+                    countWhite += 900;
+                } else if (board[i][j] == 5) {
+                    countWhite += 20000;
+                } else if (board[i][j] == 6) {
+                    countWhite += 100;
+                } else if (board[i][j] == -1) {
+                    countBlack += 500;
+                } else if (board[i][j] == -2) {
+                    countBlack += 320;
+                } else if (board[i][j] == -3) {
+                    countBlack += 330;
+                } else if (board[i][j] == -4) {
+                    countBlack += 900;
+                } else if (board[i][j] == -5) {
+                    countBlack += 20000;
+                } else if (board[i][j] == -6) {
+                    countBlack += 100;
                 }
             }
         }
@@ -189,7 +272,7 @@ class SmartGuy {
         return countWhite - countBlack;
     }
 
-    private List<ChessMove> getValidMoves(int currentPlayer, int[][] state) {
+    private List<ChessMove> getValidMoves(int currentPlayer, int[][] state, boolean onlyCaptures) {
         List<ChessMove> moves = new ArrayList<>();
 
         ChessBoard board = new ChessBoard(state);
@@ -205,12 +288,20 @@ class SmartGuy {
                     continue;
                 }
                 // check to see if the piece can move
-                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), board);
+                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), board, true);
                 if (pieceMoves.isEmpty()) {
                     continue;
                 }
-                // add piece moves to the list of valid moves
-                moves.addAll(pieceMoves);
+                if (onlyCaptures) {
+                    for (ChessMove move : pieceMoves) {
+                        if (board.getPiece(move.getEndPosition()) != null && board.getPiece(move.getEndPosition()).getTeamColor() != myColor) {
+                            moves.add(move);
+                        }
+                    }
+                }
+                else {
+                    moves.addAll(pieceMoves);
+                }
             }
         }
 
@@ -233,7 +324,7 @@ class SmartGuy {
                     continue;
                 }
                 // check to see if the piece can move
-                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), board);
+                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), board, true);
                 if (pieceMoves.isEmpty()) {
                     continue;
                 }
@@ -253,6 +344,28 @@ class SmartGuy {
         int startCol = move.getStartPosition().getColumn() - 1;
         int endRow = move.getEndPosition().getRow() - 1;
         int endCol = move.getEndPosition().getColumn() - 1;
+
+        if (currentState[startRow][startCol] == 5 || currentState[startRow][startCol] == -5) {
+            if (Math.abs(startCol - endCol) > 1) {
+                if (endCol == 6) {
+                    if (endRow == 0) {
+                        newState[0][5] = 1;
+                        newState[0][7] = 0;
+                    } else {
+                        newState[7][5] = -1;
+                        newState[7][7] = 0;
+                    }
+                } else if (endCol == 2) {
+                    if (endRow == 0) {
+                        newState[0][3] = 1;
+                        newState[0][0] = 0;
+                    } else {
+                        newState[7][3] = -1;
+                        newState[7][0] = 0;
+                    }
+                }
+            }
+        }
 
         if (move.getPromotionPiece() != null) {
             if (me == 1) {
@@ -338,7 +451,7 @@ class SmartGuy {
 //        bot.round = 1;
 //        int myMove;
 //        bot.state = initialState;
-////        bot.getValidMoves(bot.round, initialState);
+////        bot.getValidMoves(bot.round, initialState, false);
 //        myMove = bot.move();
 //        bot.getGlobalValidMoves(initialState);
 //        System.out.println(bot.validMoves[myMove]);

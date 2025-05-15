@@ -4,19 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ca56148c-7a8e-4593-9bf4-7f53c3b3c547" name="Changes" comment="Game is now playable with friends. Chess.com images are used as pieces. Double click implementation added.">
-      <change afterPath="$PROJECT_DIR$/ChessServer/Chess/ChessBoard.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ChessServer/Chess/ChessMove.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ChessServer/Chess/ChessPiece.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ChessServer/Chess/ChessPosition.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ChessSmart/SmartGuy.java" afterDir="false" />
+    <list default="true" id="ca56148c-7a8e-4593-9bf4-7f53c3b3c547" name="Changes" comment="SmartGuy has been born">
+      <change afterPath="$PROJECT_DIR$/ChessSmart/Evaluation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Chess.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Chess.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ChessHuman/Human.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessHuman/Human.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ChessRandom/RandomGuy.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessRandom/RandomGuy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ChessServer/Chess.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessServer/Chess/Chess.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ChessServer/ChessMove.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ChessServer/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessServer/Chess/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/Chess/Chess.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessServer/Chess/Chess.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/Chess/ChessPiece.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessServer/Chess/ChessPiece.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessServer/Chess/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessServer/Chess/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChessSmart/SmartGuy.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessSmart/SmartGuy.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,6 +43,7 @@
     "Application.Chess.Chess.executor": "Run",
     "Application.Chess.executor": "Run",
     "Application.ChessPiece.executor": "Run",
+    "Application.Evaluation.executor": "Run",
     "Application.Human.executor": "Run",
     "Application.Human1.executor": "Run",
     "Application.Human2.executor": "Run",
@@ -54,6 +51,8 @@
     "Application.RandomGuy1.executor": "Run",
     "Application.RandomGuy2.executor": "Run",
     "Application.SmartGuy.executor": "Run",
+    "Application.SmartGuy1.executor": "Run",
+    "Application.SmartGuy2.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
@@ -78,6 +77,14 @@
     </key>
   </component>
   <component name="RunManager" selected="Application.SmartGuy2">
+    <configuration name="Chess" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Chess.Chess" />
+      <module name="Chess" />
+      <option name="PROGRAM_PARAMETERS" value="100" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="ChessPiece" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Chess.ChessPiece" />
       <module name="Chess" />
@@ -91,10 +98,9 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Chess.Chess" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Chess.Chess" />
+    <configuration name="Evaluation" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Evaluation" />
       <module name="Chess" />
-      <option name="PROGRAM_PARAMETERS" value="10" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -153,14 +159,16 @@
       <item itemvalue="Application.RandomGuy2" />
       <item itemvalue="Application.RandomGuy1" />
       <item itemvalue="Application.SmartGuy2" />
+      <item itemvalue="Application.Evaluation" />
       <item itemvalue="Application.SmartGuy1" />
       <item itemvalue="Application.ChessPiece" />
-      <item itemvalue="Application.Chess.Chess" />
+      <item itemvalue="Application.Chess" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Chess.Chess" />
+        <item itemvalue="Application.Chess" />
         <item itemvalue="Application.SmartGuy1" />
+        <item itemvalue="Application.Evaluation" />
         <item itemvalue="Application.ChessPiece" />
       </list>
     </recent_temporary>
@@ -182,7 +190,11 @@
       <updated>1746020939834</updated>
       <workItem from="1746020940868" duration="265000" />
       <workItem from="1746021236285" duration="37578000" />
-      <workItem from="1746552028625" duration="24541000" />
+      <workItem from="1746552028625" duration="25255000" />
+      <workItem from="1746684600324" duration="597000" />
+      <workItem from="1746802920773" duration="1873000" />
+      <workItem from="1746805000660" duration="169000" />
+      <workItem from="1746805373272" duration="55954000" />
     </task>
     <task id="LOCAL-00001" summary="Chess Project Created">
       <option name="closed" value="true" />
@@ -208,7 +220,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746546380526</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="SmartGuy has been born">
+      <option name="closed" value="true" />
+      <created>1746682886778</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1746682886780</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -229,15 +249,21 @@
     <MESSAGE value="Chess Project Created" />
     <MESSAGE value="Pieces are correctly drawn on the board." />
     <MESSAGE value="Game is now playable with friends. Chess.com images are used as pieces. Double click implementation added." />
-    <option name="LAST_COMMIT_MESSAGE" value="Game is now playable with friends. Chess.com images are used as pieces. Double click implementation added." />
+    <MESSAGE value="SmartGuy has been born" />
+    <option name="LAST_COMMIT_MESSAGE" value="SmartGuy has been born" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/ChessSmart/SmartGuy.java</url>
-          <line>65</line>
-          <option name="timeStamp" value="11" />
+          <url>file://$PROJECT_DIR$/ChessServer/Chess/Chess.java</url>
+          <line>553</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessSmart/Evaluation.java</url>
+          <line>325</line>
+          <option name="timeStamp" value="25" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

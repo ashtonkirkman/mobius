@@ -61,7 +61,7 @@ public class Player {
                     continue;
                 }
                 // check to see if the piece can move
-                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), board);
+                pieceMoves = currentPiece.validMoves(new ChessPosition(i+1, j+1), board, false);
                 if (pieceMoves.isEmpty()) {
                     continue;
                 }
