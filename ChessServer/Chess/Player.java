@@ -74,6 +74,24 @@ public class Player {
         }
     }
 
+    public boolean takeBack(int round, int state[][], double t1, double t2, PrintWriter prnt) {
+        try {
+            int i, j;
+            String status = me + "\n" + round + "\n" + t1 + "\n" + t2 + "\n";
+            for (i = 0; i < 8; i++) {
+                for (j = 0; j < 8; j++) {
+                    status += state[i][j] + "\n";
+                }
+            }
+            sout.println(status);
+
+            return Integer.parseInt(sin.readLine().trim()) == -10;
+        } catch (IOException e) {
+            System.err.println("Caught IOException: " + e.getMessage());
+        }
+        return false;
+    }
+
     public int[] takeTurn(int round, int state[][], double t1, double t2, PrintWriter prnt) {
         // first, check to see if this player has any valid moves
         getValidMoves(round, state);
@@ -110,8 +128,13 @@ public class Player {
                 }
                 sout.println(status);
 
+
                 // receive the players move
                 targetRow = Integer.parseInt(sin.readLine().trim());
+                if (targetRow == -100) {
+                    mueva[0] = targetRow;
+                    return mueva;
+                }
                 targetCol = Integer.parseInt(sin.readLine().trim());
                 fromRow = Integer.parseInt(sin.readLine().trim());
                 fromCol = Integer.parseInt(sin.readLine().trim());
@@ -161,6 +184,8 @@ public class Player {
         sout.println(status);
         System.out.println("Sent status update");
     }
+
+
 
     public void gameOver(int state[][]) {
         sout.println("-999");

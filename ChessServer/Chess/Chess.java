@@ -17,7 +17,7 @@ class MyCanvas extends JComponent {
     Color gris = new Color(230,230,230);
     Color myWhite = new Color(220, 220, 220);
 
-    int state[][] = new int[8][8];
+    int[][] state = new int[8][8];
     int turn = 0;
     double t1, t2;
     boolean gameOver = false;
@@ -392,7 +392,8 @@ class MyCanvas extends JComponent {
 public class Chess extends JFrame {
     Color bkgroundColor = new Color(200,160,120);
     static MyCanvas canvas;
-    static int state[][] = new int[8][8];
+    static int[][] state = new int[8][8];
+    static int[][] previousState = new int[8][8];
 
     static String fnombre;
     static FileWriter wrte;
@@ -450,12 +451,6 @@ public class Chess extends JFrame {
     }
 
     public static void playGame(int minutos) {
-        int i, j;
-//        for (i = 0; i < 8; i++) {
-//            for (j = 0; j < 8; j++) {
-//                state[i][j] = 0;
-//            }
-//        }
 
         double t1 = minutos * 60.0, t2 = minutos * 60.0;
 
@@ -543,8 +538,20 @@ public class Chess extends JFrame {
 
             System.out.println("\nBlack: " + t1 + "\nWhite: " + t2);
 
-            if (mueva[0] != -1) {
+            if (mueva[0] == -100) {
+                for (int i = 0; i < 8; i++) {
+                    System.arraycopy(previousState[i], 0, state[i], 0, 8);
+                }
+                canvas.updateState(state, 1-turn, t1, t2, winner);
+                p1.update(round, state, t1, t2);
+                p2.update(round, state, t1, t2);
+
+            } else if (mueva[0] != -1) {
                 prnt.println("Player " + (turn+1) + ": " + mueva[0] + ", " + mueva[1]);
+
+                for (int i = 0; i < 8; i++) {
+                    System.arraycopy(state[i], 0, previousState[i], 0, 8);
+                }
 
                 // mueva[0] = toRow
                 // mueva[1] = toCol

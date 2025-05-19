@@ -63,6 +63,7 @@ class MyCanvas extends JComponent {
     BufferedImage blackBishop;
     BufferedImage whiteKnight;
     BufferedImage blackKnight;
+    BufferedImage backArrow;
 
     public MyCanvas(int w, int h, int _me) {
         //System.out.println("MyCanvas");
@@ -87,6 +88,7 @@ class MyCanvas extends JComponent {
             blackBishop = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\bk-bishop.png"));
             whiteKnight = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\wt-knight.png"));
             blackKnight = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\bk-knight.png"));
+            backArrow = ImageIO.read(new File("C:\\Users\\kirkm\\BYU Winter 2025\\Intro to AI\\projects\\Chess\\resources\\arrow.png"));
         } catch (IOException e) {
             System.err.println("Failed to load pawn image: " + e.getMessage());
         }
@@ -196,6 +198,22 @@ class MyCanvas extends JComponent {
         g.drawString("1", baseline, 34 + 6 + (sqrHght / 2) + sqrHght*7);
     }
 
+    void drawResignBox(Graphics g, int w) {
+        g.setColor(myWhite);
+        g.fillRect (w, 10, 80, 40);
+
+        g.setFont(new Font("Courier", 1, 18));
+        g.setColor(Color.black);
+
+        int baseline = w + 8;
+        g.drawString("Resign", baseline, 10 + 6 + (40 / 2));
+    }
+
+    void drawTakeBackArrow(Graphics g, int w) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.drawImage(backArrow, w , 485, 60, 60, null);
+    }
+
     void drawPieces(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         int i, j;
@@ -281,6 +299,10 @@ class MyCanvas extends JComponent {
 
         drawNumberBar(g, 6);
         drawNumberBar(g, width-26);
+
+        drawResignBox(g, width);
+
+        drawTakeBackArrow(g, width);
 
         Color lightSquareColor = new Color(238, 238, 210);
         g.setColor(lightSquareColor);
@@ -475,6 +497,7 @@ class Human extends JFrame {
     int nMouseY = -1;
     int firstClickX = -1;
     int firstClickY = -1;
+    boolean goBackClick = false;
     boolean waitingForSecondClick = false;
 
     ChessMove validMoves[] = new ChessMove[100];
@@ -505,17 +528,54 @@ class Human extends JFrame {
                 int ymouse = ((height - 168) - msY) / ((height - 168) / 8);
                 int xmouse = msX / ((width - 60) / 8);
 
+                if ((ymouse == 0) && (xmouse == 8 || xmouse == 9)) {
+                    goBackClick = true;
+//                    sout.println("-100");
+                }
+
                 if ((ymouse >= 0) && (ymouse < 8) && (xmouse >= 0) && (xmouse < 8)) {
                     if (!waitingForSecondClick) {
                         // First click: select piece
-                        firstClickX = xmouse;
-                        firstClickY = ymouse;
-                        waitingForSecondClick = true;
+                        if (theMe == 1) {
+                            if (state[ymouse][xmouse] > 0) {
+                                // piece is the same color as me
+                                firstClickX = xmouse;
+                                firstClickY = ymouse;
+                                waitingForSecondClick = true;
+                            }
+                        } else {
+                            if (state[7 - ymouse][7 - xmouse] < 0) {
+                                // piece is the same color as me
+                                firstClickX = 7 - xmouse;
+                                firstClickY = 7 - ymouse;
+                                waitingForSecondClick = true;
+                            }
+                        }
                     } else {
                         // Second click: destination
-                        nMouseX = xmouse;
-                        nMouseY = ymouse;
-                        waitingForSecondClick = false;
+                        if (theMe == 1) {
+                            if (state[ymouse][xmouse] > 0) {
+                                // destination piece is the same color as me
+                                firstClickX = xmouse;
+                                firstClickY = ymouse;
+                            }
+                            else {
+                                nMouseX = xmouse;
+                                nMouseY = ymouse;
+                                waitingForSecondClick = false;
+                            }
+                        } else {
+                            if (state[7 - ymouse][7 - xmouse] < 0) {
+                                // destination piece is the same color as me
+                                firstClickX = 7 - xmouse;
+                                firstClickY = 7 - ymouse;
+                            }
+                            else {
+                                nMouseX = 7 - xmouse;
+                                nMouseY = 7 - ymouse;
+                                waitingForSecondClick = false;
+                            }
+                        }
                     }
                 }
             }
@@ -534,7 +594,6 @@ class Human extends JFrame {
             if (gameOver)
                 break;
 
-            canvas.printState();
             canvas.updateState(state, turn, t1, t2, winner);
 
             if (turn == theMe) {
@@ -543,20 +602,24 @@ class Human extends JFrame {
 
                 nMouseX = -1;
                 waitingForSecondClick = false;
+                goBackClick = false;
                 while (nMouseX == -1 || waitingForSecondClick) {
                     try {
                         Thread.sleep(20);
+                        if (goBackClick) {
+                            break;
+                        }
                     } catch (InterruptedException e) {
                         System.err.println(e);
                     }
                 }
-                if (theMe == 2) {
-                    nMouseY = 7 - nMouseY;
-                    nMouseX = 7 - nMouseX;
-                    firstClickY = 7 - firstClickY;
-                    firstClickX = 7 - firstClickX;
+
+                String sel;
+                if (goBackClick) {
+                    sel = "-100";
+                } else {
+                    sel = nMouseY + "\n" + nMouseX + "\n" + firstClickY + "\n" + firstClickX;
                 }
-                String sel = nMouseY + "\n" + nMouseX + "\n" + firstClickY + "\n" + firstClickX;
 
                 sout.println(sel);
             }

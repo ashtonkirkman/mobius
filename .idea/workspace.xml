@@ -4,15 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ca56148c-7a8e-4593-9bf4-7f53c3b3c547" name="Changes" comment="SmartGuy has been born">
-      <change afterPath="$PROJECT_DIR$/ChessSmart/Evaluation.java" afterDir="false" />
+    <list default="true" id="ca56148c-7a8e-4593-9bf4-7f53c3b3c547" name="Changes" comment="quiescence implemented">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ChessHuman/Human.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessHuman/Human.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ChessRandom/RandomGuy.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessRandom/RandomGuy.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ChessServer/Chess/Chess.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessServer/Chess/Chess.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ChessServer/Chess/ChessPiece.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessServer/Chess/ChessPiece.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ChessServer/Chess/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessServer/Chess/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ChessSmart/SmartGuy.java" beforeDir="false" afterPath="$PROJECT_DIR$/ChessSmart/SmartGuy.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -194,7 +190,8 @@
       <workItem from="1746684600324" duration="597000" />
       <workItem from="1746802920773" duration="1873000" />
       <workItem from="1746805000660" duration="169000" />
-      <workItem from="1746805373272" duration="55954000" />
+      <workItem from="1746805373272" duration="74429000" />
+      <workItem from="1747664072307" duration="7399000" />
     </task>
     <task id="LOCAL-00001" summary="Chess Project Created">
       <option name="closed" value="true" />
@@ -228,7 +225,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746682886780</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="quiescence implemented">
+      <option name="closed" value="true" />
+      <created>1747313834400</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1747313834400</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -250,20 +255,71 @@
     <MESSAGE value="Pieces are correctly drawn on the board." />
     <MESSAGE value="Game is now playable with friends. Chess.com images are used as pieces. Double click implementation added." />
     <MESSAGE value="SmartGuy has been born" />
-    <option name="LAST_COMMIT_MESSAGE" value="SmartGuy has been born" />
+    <MESSAGE value="quiescence implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="quiescence implemented" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/ChessServer/Chess/Chess.java</url>
-          <line>553</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/ChessSmart/Evaluation.java</url>
           <line>325</line>
           <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessServer/Chess/Chess.java</url>
+          <line>487</line>
+          <option name="timeStamp" value="96" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessServer/Chess/Chess.java</url>
+          <line>512</line>
+          <option name="timeStamp" value="97" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessHuman/Human.java</url>
+          <line>623</line>
+          <option name="timeStamp" value="100" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessServer/Chess/Player.java</url>
+          <line>133</line>
+          <option name="timeStamp" value="107" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessServer/Chess/Player.java</url>
+          <line>164</line>
+          <option name="timeStamp" value="109" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessServer/Chess/Chess.java</url>
+          <line>560</line>
+          <option name="timeStamp" value="110" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessServer/Chess/Player.java</url>
+          <line>183</line>
+          <option name="timeStamp" value="111" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessServer/Chess/Player.java</url>
+          <line>99</line>
+          <option name="timeStamp" value="113" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessServer/Chess/Player.java</url>
+          <line>116</line>
+          <option name="timeStamp" value="114" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessServer/Chess/Player.java</url>
+          <line>128</line>
+          <option name="timeStamp" value="115" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ChessHuman/Human.java</url>
+          <line>524</line>
+          <option name="timeStamp" value="119" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
